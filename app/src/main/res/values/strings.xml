@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MoviesApp</string>
+    <string name="tmdb_apikey">1f54bd990f1cdfb230adb312546d765d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
