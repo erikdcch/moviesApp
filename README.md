@@ -1,5 +1,5 @@
 # moviesApp
-Example app to show information about movies
+Example app to show information about movies using MVVM architecture
 
 # Libraries
 * Glide: Allow to loading images from url
