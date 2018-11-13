@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MoviesApp</string>
+    <string name="tmdb_apikey">1f54bd990f1cdfb230adb312546d765d</string>
+    <string name="release_date">Release date: %s</string>
+    <string name="msg_error_connection">Connection Error. Try again</string>
+    <string name="refresh">Refresh</string>
+
+</resources>
