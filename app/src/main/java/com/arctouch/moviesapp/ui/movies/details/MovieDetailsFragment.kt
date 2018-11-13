@@ -1,5 +1,6 @@
 package com.arctouch.moviesapp.ui.movies.details
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.arctouch.moviesapp.R
 import com.arctouch.moviesapp.model.Movie
-import com.arctouch.moviesapp.utils.BASE_IMG_URL
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 
@@ -44,15 +44,16 @@ class MovieDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MovieDetailsViewModel::class.java)
+        setObservers()
 
-        showInfo()
+        viewModel.fillMovieDetails(movie)
     }
 
-    private fun showInfo() {
-        tvName.text = movie?.name
-        tvReleaseDate.text = movie?.relaaseDateFormat()
-        tvOverview.text = movie?.overview
-        if (movie?.urlImage!!.isNotEmpty()) Glide.with(this).load(BASE_IMG_URL + movie?.urlImage).into(ivPoster)
+    private fun setObservers() {
+        viewModel.name.observe(this, Observer { tvName.text = it })
+        viewModel.imgUrl.observe(this, Observer { Glide.with(this).load(it).into(ivPoster) })
+        viewModel.releaseDate.observe(this, Observer { tvReleaseDate.text = String.format(getString(R.string.release_date), it) })
+        viewModel.overview.observe(this, Observer { tvOverview.text = it })
     }
 
 }

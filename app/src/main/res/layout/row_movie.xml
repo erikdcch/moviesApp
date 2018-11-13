@@ -26,7 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="@color/black_transparency_80"
+        android:background="@color/black_transparency_60"
         android:gravity="center"
         android:lines="2"
         android:maxLines="2"

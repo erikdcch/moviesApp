@@ -1,4 +1,4 @@
-package com.arctouch.moviesapp.utils
+package com.arctouch.moviesapp.utils.extensions
 
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater

@@ -10,13 +10,13 @@ import java.util.*
  */
 @Parcelize
 data class Movie(
-        val name: String,
-        val urlImage: String,
-        val genre: String,
-        val releaseDate: Date,
-        val overview: String) : Parcelable {
+    var name: String ?= "",
+    var urlImage: String ?= "",
+    var genre: String ?= "",
+    var releaseDate: Date,
+    var overview: String ?= "") : Parcelable {
 
-    fun relaaseDateFormat(): String {
+    fun relaseDateFormat(): String {
         val format = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
         return format.format(releaseDate)
     }

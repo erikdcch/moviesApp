@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import com.arctouch.moviesapp.R
 import com.arctouch.moviesapp.model.Movie
 import com.arctouch.moviesapp.utils.BASE_IMG_URL
-import com.arctouch.moviesapp.utils.inflate
+import com.arctouch.moviesapp.utils.extensions.inflate
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.row_movie.view.*
 
 /**
  * Created by erikcruz on 11/9/18
  */
-class MoviesAdapter(private val movies: List<Movie>, private val listener: (Movie) -> Unit) :
+class MoviesAdapter(private val movies: MutableList<Movie>, private val listener: (Movie) -> Unit) :
         RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int) = MovieViewHolder(parent.inflate(R.layout.row_movie))
@@ -29,5 +29,10 @@ class MoviesAdapter(private val movies: List<Movie>, private val listener: (Movi
             tvTitle.text = item.name
             setOnClickListener { listener(item) }
         }
+    }
+
+    fun addMovies(list: List<Movie>) {
+        movies.addAll(list)
+        this.notifyDataSetChanged()
     }
 }

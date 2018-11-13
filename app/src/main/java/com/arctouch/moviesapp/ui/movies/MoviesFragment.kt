@@ -4,18 +4,27 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.arctouch.moviesapp.R
 import com.arctouch.moviesapp.model.Movie
+import com.arctouch.moviesapp.webservice.Failure
+import com.arctouch.moviesapp.webservice.Result
+import com.arctouch.moviesapp.webservice.Success
 import kotlinx.android.synthetic.main.movies_fragment.*
 
+const val PAGE_START = 1
 
 class MoviesFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
+    private var moviesList = mutableListOf<Movie>()
+    private var currentPage = PAGE_START
+    private lateinit var moviesAdapter: MoviesAdapter
 
     interface OnFragmentInteractionListener {
         fun goToMovieDetails(movie: Movie)
@@ -27,33 +36,66 @@ class MoviesFragment : Fragment() {
 
     private lateinit var viewModel: MoviesViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.movies_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
-        viewModel.movies.observe(this, Observer { showMovies(it) })
-
         setupRvMovies()
-        loadMovies()
+        viewModel.moviesResponse.observe(this, Observer { renderResult(it!!) })
+        viewModel.loadMovies(PAGE_START)
     }
 
+    private fun renderResult(result: Result<List<Movie>>) {
+        when (result) {
+            is Failure -> showError()
+            is Success -> showMovies(result.data)
+        }
+    }
 
     private fun setupRvMovies() {
-        rvMovies.layoutManager = GridLayoutManager(context, 3)
+        moviesAdapter = MoviesAdapter(moviesList) { listener?.goToMovieDetails(it) }
+        rvMovies.apply {
+            layoutManager = GridLayoutManager(context, 3)
+            addOnScrollListener(paginationScrollListener)
+            adapter = moviesAdapter
+        }
     }
 
-    private fun loadMovies() {
+    private fun loadMovies(page: Int) {
         progressBar.visibility = View.VISIBLE
-        viewModel.loadMovies()
+        viewModel.loadMovies(page)
     }
 
-    private fun showMovies(movies: List<Movie>?) {
+    private fun showMovies(movies: List<Movie>) {
         progressBar.visibility = View.GONE
-        rvMovies.adapter = MoviesAdapter(movies.orEmpty()) {
-            listener?.goToMovieDetails(it)
+        moviesAdapter.addMovies(movies)
+    }
+
+    private fun showError() {
+        progressBar.visibility = View.GONE
+        Snackbar.make(mainView, R.string.msg_error_connection, Snackbar.LENGTH_INDEFINITE).apply {
+            setAction(R.string.refresh) { loadMovies(currentPage) }.show()
+        }
+    }
+
+    private val paginationScrollListener = object : RecyclerView.OnScrollListener() {
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            if (dy > 0) {
+                if (!rvMovies.canScrollVertically(RecyclerView.FOCUS_DOWN)) {
+                    currentPage++
+                    loadMovies(currentPage)
+                }
+            }
         }
     }
 
